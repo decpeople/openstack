@@ -68,6 +68,7 @@ def index(request):
     global request_name_machine
     if request.method == 'GET':
         return HttpResponse(data_list)
+        #status-controller-post-host-bill
     elif request.method == 'POST':
         my_json = request.body.decode('utf8').replace("'", '"') 
         data_js = json.loads(my_json)
@@ -187,5 +188,3 @@ async def remove_mode():
         app_name='mysql',
         force=True
     )
-
-#TESTSTSTSTST
