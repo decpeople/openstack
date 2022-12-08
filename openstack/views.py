@@ -188,3 +188,6 @@ async def remove_mode():
         force=True
     )
 
+
+
+#Command schema add-for openstack and technical descripton 
