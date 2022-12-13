@@ -1,20 +1,16 @@
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from .serializer import ChurmHubSerializer
 from juju.controller import Controller
 from django.http import HttpResponse
 from rest_framework import viewsets
-from django.shortcuts import render 
 from juju.model import Model
 from .models import ChurmHub
-from juju.unit import Unit
+from juju.application import Application
+import json 
 
-
-import json
 import asyncio
 data_list = {
  'endpoint_test_version': '172.16.141.9:17070',
@@ -47,57 +43,8 @@ data_list = {
           "-----END CERTIFICATE-----"
 }
 source_data=[]
-
-#------------Data for Juju request-----------#
-request_entity_url=''
-request_application_name=''
-request_series=''
-request_num_units=0
-request_channel=''
-request_name_machine=''
-#------------Data for Juju request-----------#
-
-
-
-def index(request):
-    global request_entity_url
-    global request_application_name
-    global request_series
-    global request_num_units
-    global request_channel
-    global request_name_machine
-    if request.method == 'GET':
-        return HttpResponse(data_list)
-        #status-controller-post-host-bill
-    elif request.method == 'POST':
-        my_json = request.body.decode('utf8').replace("'", '"') 
-        data_js = json.loads(my_json)
-        for i in data_js:
-            print(data_js[i])
-            if i == 'entity_url':
-                request_entity_url = data_js[i]
-            elif i == 'application_name':
-                request_application_name = data_js[i]
-            elif i =='series':
-                request_series = data_js[i]
-            elif i == 'channel':
-                request_channel=data_js[i]
-            elif i == 'constraints':
-                request_name_machine=data_js[i]
-            elif i == 'num_units':
-                request_num_units = data_js[i]
-        for i in data_js:
-            if i =='COMMAND':
-                if data_js[i]=='1':
-                    asyncio.run(controller_mode())
-                elif data_js[i]=='2':
-                    asyncio.run(model_mode())
-                elif data_js[i]=='3':
-                    asyncio.run(deploy_mode())
-                elif data_js[i]=='4':
-                    asyncio.run(remove_mode())
-        global source_data
-        return HttpResponse(source_data)
+data_js={}
+#-----------DataBase model for churmHub------#
 class ChurmHubViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     queryset = ChurmHub.objects.all()
@@ -110,36 +57,76 @@ class ChurmHubViewSet(viewsets.ModelViewSet):
         content = JSONRenderer().render(serializer.data)
         print("CONTENT-DATA-SERIALIZER", content)
         return Response(serializer.data)
-    
+#-----------DataBase model for churmHub------#
+        
+"""
+The index function is created to accept http requests
+and is distributed by commands,
+each command calls a separate function.
+
+Функция индекс создан для принятия http запросов
+и распределение по командам,
+каждая команда вызывает отдельную функцию.
+
+Requests arrive in the form of a json file,
+which specifies the key-value,
+which are passed as a parameter for the function.
+
+Запросы прилетает в виде json файла,
+в котором указаны ключ-значение,
+которые передаются как параметр для функции. 
+"""
+def index(request):
+    if request.method == 'GET':
+        return HttpResponse('Paas Service')
+    elif request.method == 'POST':
+        my_json = request.body.decode('utf8').replace("'", '"') 
+        global data_js
+        data_js = json.loads(my_json)
+        if data_js['COMMAND']=='controll_data':
+            asyncio.run(controller_mode())
+        elif data_js['COMMAND']=='model_data':
+            asyncio.run(model_mode())
+        elif data_js['COMMAND']=='deploy_action':
+            asyncio.run(deploy_mode())
+        elif data_js['COMMAND']=='remove_action':
+            asyncio.run(remove_mode())
+        elif data_js['COMMAND']=='releation_create':
+            asyncio.run(releation_create())
+        elif data_js['COMMAND']=='releation_remove':
+            asyncio.run(releation_remove())
+        elif data_js['COMMAND']=='application_data':
+            asyncio.run(application_data())
+        elif data_js['COMMAND']=='refresh_application':
+            asyncio.run(refresh_application())
+        global source_data
+        return HttpResponse(json.dumps(source_data))
 
 async def controller_mode():
-    print('START-CONTROLLER-SYSTEM')
     global source_data
     controller = Controller()
-    controller.add_credential()
     await controller.connect(endpoint=data_list['endpoint_test_version'],
                              username=data_list['username_test_version'],
                              password=data_list['password_test_version'],
                              cacert=data_list['cert_test_version']
                              )
-    print(await controller.list_models())
-    source_data = await controller.list_models()
+    print(await controller.model_uuids())
+    source_data = await controller.model_uuids()
 
 async def model_mode():
     model = Model()
     global source_data
-    print("START-MODEL-INFO")
     await model.connect(endpoint=data_list['endpoint_test_version'],
                         uuid=data_list['uuid_test_version'],
                         username=data_list['username_test_version'],
                         password=data_list['password_test_version'],
                         cacert=data_list['cert_test_version']
     )
-    source_data = model.info
-    print(model.info)
+    source_data = await model.info
 
 async def deploy_mode():
     model = Model()
+    global data_js
     await model.connect(endpoint=data_list['endpoint_test_version'],
                         uuid=data_list['uuid_test_version'],
                         username=data_list['username_test_version'],
@@ -148,43 +135,113 @@ async def deploy_mode():
                         )
 
     await model.deploy(
-        entity_url='mysql-innodb-cluster',
-        application_name='mysql-innodb-cluster',
-        series='jammy',
-        num_units=3,
-        channel='8.0/stable',
+        entity_url=data_js['entity_url'],
+        application_name=data_js['application_name'],
+        series=data_js['series'],
+        channel=data_js['channel'],
         constraints={
-            'tags': ['testdb']
+            'tags': [data_js['constraints']]
         },
+        num_units=data_js['num_units'],
     )
-    await model.deploy(
-        entity_url='keystone',
-        application_name='keystone',
-        series='jammy',
-        channel='yoga/stable',
-        constraints={
-            'tags': ['testapp']
-        },
-    )
-    await model.deploy(
-        entity_url='mysql-router',
-        application_name='keystone-mysql-router',
-        series='jammy',
-        channel='8.0/stable',
-    )
-
-    await model.add_relation('keystone-mysql-router', 'mysql-innodb-cluster')
-    await model.add_relation('keystone-mysql-router', 'keystone')
-    print("DEPLOY-MODEL-ADD_RELATION-INFO:?>", model.info)
-
+    global source_data
+    app = Application(model=model, entity_id=data_js['entity_url'])
+    source_data = app.status
+    print(source_data)
 
 async def remove_mode():
-    model = model_mode()
-    await model.remove_application(
-        app_name='wordpress',
-        force=True
+    model = Model()
+    global data_js
+    global source_data
+    await model.connect(endpoint=data_list['endpoint_test_version'],
+                        uuid=data_list['uuid_test_version'],
+                        username=data_list['username_test_version'],
+                        password=data_list['password_test_version'],
+                        cacert=data_list['cert_test_version']
     )
     await model.remove_application(
-        app_name='mysql',
+        app_name=data_js['application_name'],
         force=True
     )
+    app = Application(model=model, entity_id=data_js['entity_url'])
+    source_data = app.status
+    print(source_data)
+
+async def releation_create():
+    model = Model()
+    global data_js
+    global source_data
+    await model.connect(endpoint=data_list['endpoint_test_version'],
+                        uuid=data_list['uuid_test_version'],
+                        username=data_list['username_test_version'],
+                        password=data_list['password_test_version'],
+                        cacert=data_list['cert_test_version']
+    )
+    await model.add_relation(data_js['relation_name1'], data_js['relation_name2'])
+    app = Application(model=model, entity_id=data_js['entity_url'])
+    source_data = app.status
+    print(source_data)
+
+async def releation_remove():
+    model = Model()
+    global data_js
+    global source_data
+    await model.connect(endpoint=data_list['endpoint_test_version'],
+                        uuid=data_list['uuid_test_version'],
+                        username=data_list['username_test_version'],
+                        password=data_list['password_test_version'],
+                        cacert=data_list['cert_test_version']
+    )
+    app = Application(model=model, entity_id=data_js['entity_url'])
+    app.remove_relation(local_relation=data_js['relation_name1'], remote_relation=data_js['relation_name2'])
+    source_data = app.status
+    print(source_data)
+
+async def add_user_controlelr():
+    controller = Controller()
+    await controller.connect(endpoint=data_list['endpoint_test_version'],
+                       username=data_list['username_test_version'],
+                       password=data_list['password_test_version'],
+                       cacert=data_list['cert_test_version']
+    )
+    await controller.add_user(
+        username='aibar',
+        password='Ghjuyjp56',
+        display_name='Turar Aiabr'
+    )
+    global source_data
+    source_data = await controller.get_users()
+    print(await controller.get_users())
+
+async def application_data():
+    model = Model()
+    global data_js
+    global source_data
+    await model.connect(endpoint=data_list['endpoint_test_version'],
+                        uuid=data_list['uuid_test_version'],
+                        username=data_list['username_test_version'],
+                        password=data_list['password_test_version'],
+                        cacert=data_list['cert_test_version']
+    )
+    app = Application(model=model, entity_id=data_js['entity_url'])
+    source_data = app.status
+
+async def refresh_application():
+    controller = Controller()
+    await controller.connect(endpoint=data_list['endpoint_test_version'],
+                             username=data_list['username_test_version'],
+                             password=data_list['password_test_version'],
+                             cacert=data_list['cert_test_version']
+                             )
+
+    await controller.add_model(
+        model_name=data_js['name'],
+        cloud_name=data_js['cloud_name'],
+        credential_name=data_js['credential_name'],
+        owner=data_js['owner'],
+        region=data_js['region'],
+        config='config'
+    )
+
+    source_data = await controller.get_models()
+    print(source_data)
