@@ -17,15 +17,19 @@
     },
     {
         "COMMAND":"remove_action",
+        "entity_url":"mysql-innodb-cluster",
         "app_name":"mysql-innodb-cluster"
+        
     },
     {
         "COMMAND":"releation_create",
+        "entity_url":"mysql-innodb-cluster",
         "relation_name1":"value-1",
         "relation_name2":"value-2"
     },
     {
         "COMMAND":"releation_remove",
+        "entity_url":"mysql-innodb-cluster",
         "relation_name1":"value-1",
         "relation_name2":"value-2"
     },
@@ -36,10 +40,7 @@
     },
     {
         "COMMAND":"refresh_application",
-        "name":"Aibar",
-        "cloud_name":"maas",
-        "credential_name":"Aibar-test",
-        "owner":"turar",
-        "region":"Kazakhstan"
+        "entity_url":"mysql-innodb-cluster",
+        "channel":"8.0.19"
     }
 ]
