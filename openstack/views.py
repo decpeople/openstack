@@ -107,7 +107,7 @@ def index(request):
         elif data_js['COMMAND']=='application_data':
             asyncio.run(application_data(data_js=data_js))
         else:
-            return HttpResponse('ERROR NOT CORRECT DATA, PLEASE TRY AGAING REQUEST')
+            return HttpResponse('ERROR, PLEASE TRY AGAING REQUEST')
         return HttpResponse(json.dumps(source_data))
 
 """
@@ -208,12 +208,9 @@ async def application_data(data_js):
     source_data = app.status
     print(app.status_message)
 
-
 # TODO решить вопрос с моментом ресурса системы 
-# async def refresh_application(data_js):
-#     model = object
-#     global source_data
-#     model = await model_mode(model=model)
-#     app = Application(model=model, entity_id=data_js['entity_url'])
-#     source_data =  await app.get_constraints()
-#     print(source_data)
+
+
+async def create_controller():
+    os.system('juju bootstrap --config aws aws-controller bootstrap-timeout=700  ')
+    
