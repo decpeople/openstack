@@ -14,6 +14,8 @@ from juju.model import Model
 from juju.application import Application
 from juju.charmstore import CharmStore
 import asyncio
+import os
+import subprocess
 data_list = {
  'endpoint_test_version': '172.16.141.9:17070',
  'uuid_test_version': '56247638-4d43-472c-8da1-311c4693dcb8',
@@ -82,7 +84,8 @@ which are passed as a parameter for the function.
 def index(request):
     if request.method == 'GET': 
         if request.headers['Token'] == token:
-            print("DATA-TOKEN-ACCEPTED")    
+            print("DATA-TOKEN-ACCEPTED")
+            # print(ChurmHub.objects.filter(series='jammy'))  
             return HttpResponse('Paas Service')
         else:
             return HttpResponse('FAIL-LOAD')
