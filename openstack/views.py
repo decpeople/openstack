@@ -96,6 +96,8 @@ def index(request):
         data_js = json.loads(my_json)
         if data_js['COMMAND']=='controll_data':
             asyncio.run(controller_mode())
+        elif data_js['COMMAND'] == 'create_controller':
+            asyncio.run(create_controller())
         elif data_js['COMMAND']=='deploy_action':
             asyncio.run(deploy_mode(data_js=data_js))
         elif data_js['COMMAND']=='remove_action':
@@ -212,5 +214,20 @@ async def application_data(data_js):
 
 
 async def create_controller():
-    os.system('juju bootstrap --config aws aws-controller bootstrap-timeout=700  ')
+    os.system('#sudo snap install juju --classic')
+    os.system('#nano maas-cloud.yaml')
+    os.system('#juju add-cloud --client -f maas-cloud.yaml maas1')
+    os.system('#nano maas-creds.yaml')
+    os.system('#juju add-credential --client -f maas-creds.yaml maas1')
+    os.system('juju bootstrap \
+    --config default-space=juju \
+    --config juju-ha-space=juju \
+    --config juju-mgmt-space=juju \
+    --config ssl-hostname-verification=false \
+    --bootstrap-series=focal --constraints tags=controller maas1 jujuControllerTestAibar --show-log --debug')
+
     
+
+
+
+
