@@ -220,12 +220,7 @@ async def create_controller():
     print("start-2")
     os.system('juju add-credential --client -f maas-creds.yaml maas1')
     print("start-3")
-    os.system('juju bootstrap \
-    --config default-space=juju \
-    --config juju-ha-space=juju \
-    --config juju-mgmt-space=juju \
-    --config ssl-hostname-verification=false \
-    --bootstrap-series=focal --constraints tags=controller maas1 jujuControllerTestAibar --show-log --debug')
+    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false  --bootstrap-series=focal --constraints tags=controller maas1 jujuControllerTestAibar --show-log --debug')
     print("start-4")
 
     
