@@ -1,5 +1,5 @@
 credentials:
   maas1:
     anyuser:
-      auth-type: ktpadmin
+      auth-type: oauth1
       maas-oauth: rjQZT6u8PLAhmJks4H:3C9HpcYAXLhmAudtgZ:vbFYhKhUQqFWt7z4y844H7qrKH5JKQTZ
