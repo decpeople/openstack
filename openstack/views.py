@@ -215,9 +215,7 @@ async def application_data(data_js):
 
 async def create_controller():
     os.system('sudo snap install juju --classic')
-    os.system('nano maas-cloud.yaml')
     os.system('juju add-cloud --client -f maas-cloud.yaml maas1')
-    os.system('nano maas-creds.yaml')
     os.system('juju add-credential --client -f maas-creds.yaml maas1')
     os.system('juju bootstrap \
     --config default-space=juju \
