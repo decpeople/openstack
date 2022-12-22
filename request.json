@@ -1,6 +1,7 @@
 [
     {
-        "COMMAND":"controll_data"
+        "COMMAND":"controll_data",
+        "controller_name":"Aibar"
     },
     {
         "COMMAND":"create_controller"
