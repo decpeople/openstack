@@ -102,8 +102,8 @@ async def remove_model_and_add_model(data_js):
     global source_data
     controller = Controller()
     await controller.connect(data_js['controller_name'])
-    await controller.destroy_models(models='default', destroy_storage = False)
-    await controller.destroy_models(models='controller', destroy_storage = False)
+    await controller.destroy_models('default',False)
+    await controller.destroy_models('controller',False)
     await controller.add_model(
         model_name= data_js['controller_name'],
         cloud_name='maas1'
