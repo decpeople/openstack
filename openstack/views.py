@@ -137,7 +137,7 @@ async def create_controller(data_js):
     os.system('juju add-credential --client -f maas-creds.yaml maas1')
     print("start-3")
     #tags указать машинку, потом облако, потом название!!!!
-    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags=testdb maas1'+ str(data_js['controller_name']) +'--show-log --debug')
+    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags=testdb maas1 '+ str(data_js['controller_name']) +' --show-log --debug')
 
     
 # async def deploy_mode(data_js):
