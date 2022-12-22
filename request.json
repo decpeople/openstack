@@ -2,15 +2,18 @@
     {
         "COMMAND":"controll_data",
         "controller_name":"Aibar"
+        
     },
     {
-        "COMMAND":"create_controller"
+        "COMMAND":"create_controller",
+        "controller_name":"Aibar"
     },
     {
         "COMMAND":"model_data"
     },
     {   
         "COMMAND":"deploy_action",
+        "controller_name":"Aibar",
         "entity_url": "mysql-innodb-cluster",
         "application_name": "mysql-innodb-cluster",
         "series": "jammy",
@@ -20,18 +23,21 @@
     },
     {
         "COMMAND":"remove_action",
+        "controller_name":"Aibar",
         "entity_url":"mysql-innodb-cluster",
         "application_name":"mysql-innodb-cluster"
         
     },
     {
         "COMMAND":"releation_create",
+        "controller_name":"Aibar",
         "entity_url":"mysql-innodb-cluster",
         "relation_name1":"value-1",
         "relation_name2":"value-2"
     },
     {
         "COMMAND":"releation_remove",
+        "controller_name":"Aibar",
         "entity_url":"mysql-innodb-cluster",
         "relation_name1":"value-1",
         "relation_name2":"value-2"
@@ -39,11 +45,17 @@
 
     {
         "COMMAND":"application_data",
+        "controller_name":"Aibar",
         "entity_url":"mysql-innodb-cluster"
     },
     {
         "COMMAND":"refresh_application",
+        "controller_name":"Aibar",
         "entity_url":"mysql-innodb-cluster",
         "channel":"8.0.19"
+    },
+    {
+        "COMMAND":"remove_model_and_add_model",
+        "controller_name":"controller1-first"
     }
 ]
