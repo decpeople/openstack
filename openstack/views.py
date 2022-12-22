@@ -102,7 +102,7 @@ async def remove_model_and_add_model(data_js):
     global source_data
     controller = Controller()
     await controller.connect(data_js['controller_name'])
-    controller.add_model(
+    await controller.add_model(
         model_name= data_js['controller_name'],
         cloud_name='maas1'
     )
