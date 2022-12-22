@@ -97,7 +97,7 @@ def index(request):
         if data_js['COMMAND']=='controll_data':
             asyncio.run(controller_mode())
         elif data_js['COMMAND'] == 'create_controller':
-            asyncio.run(create_controller())
+            asyncio.run(create_controller(data_js=data_js))
         # elif data_js['COMMAND']=='deploy_action':
         #     asyncio.run(deploy_mode(data_js=data_js))
         # elif data_js['COMMAND']=='remove_action':
@@ -125,11 +125,11 @@ async def model_mode(model):
 async def controller_mode():
     global source_data
     controller = Controller()
-    await controller.connect(data_js['name_controller'])
+    await controller.connect(data_js['controller_name'])
     print(await controller.model_uuids())
     source_data = await controller.model_uuids()
 
-async def create_controller():
+async def create_controller(data_js):
     os.system('sudo snap install juju --classic')
     print("start-1")
     os.system('juju add-cloud --client -f maas-cloud.yaml maas1')
@@ -137,7 +137,7 @@ async def create_controller():
     os.system('juju add-credential --client -f maas-creds.yaml maas1')
     print("start-3")
     #tags указать машинку, потом облако, потом название!!!!
-    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags=testdb maas1 testcontroller --show-log --debug')
+    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags=testdb maas1'+ data_js['controller_name'] +'--show-log --debug')
 
     
 # async def deploy_mode(data_js):
