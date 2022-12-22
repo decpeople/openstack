@@ -78,7 +78,7 @@ def index(request):
             asyncio.run(releation_remove(data_js=data_js))
         elif data_js['COMMAND']=='application_data':
             asyncio.run(application_data(data_js=data_js))
-        elif data_js['CONNAD']=='remove_model_and_add_model':
+        elif data_js['COMMAND']=='remove_model_and_add_model':
             asyncio.run(remove_model_and_add_model(data_js=data_js))
         else:
             return HttpResponse('ERROR, PLEASE TRY AGAING REQUEST')
