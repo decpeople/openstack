@@ -2,7 +2,9 @@
     {
         "COMMAND":"controll_data"
     },
-
+    {
+        "COMMAND":"create_controller"
+    },
     {
         "COMMAND":"model_data"
     },
@@ -18,7 +20,7 @@
     {
         "COMMAND":"remove_action",
         "entity_url":"mysql-innodb-cluster",
-        "app_name":"mysql-innodb-cluster"
+        "application_name":"mysql-innodb-cluster"
         
     },
     {

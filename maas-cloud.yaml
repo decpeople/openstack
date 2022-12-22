@@ -2,4 +2,4 @@ clouds:
   maas1:
     type: maas
     auth-types: [oauth1]
-    endpoint: http://maas1.kazteleport.kz:5240/MAAS
+    endpoint: http://MaaS-Juju.kazteleport.kz:5240/MAAS

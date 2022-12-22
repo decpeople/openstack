@@ -98,16 +98,16 @@ def index(request):
             asyncio.run(controller_mode())
         elif data_js['COMMAND'] == 'create_controller':
             asyncio.run(create_controller())
-        elif data_js['COMMAND']=='deploy_action':
-            asyncio.run(deploy_mode(data_js=data_js))
-        elif data_js['COMMAND']=='remove_action':
-            asyncio.run(remove_mode(data_js=data_js))
-        elif data_js['COMMAND']=='releation_create':
-            asyncio.run(releation_create(data_js=data_js))
-        elif data_js['COMMAND']=='releation_remove':
-            asyncio.run(releation_remove(data_js=data_js))
-        elif data_js['COMMAND']=='application_data':
-            asyncio.run(application_data(data_js=data_js))
+        # elif data_js['COMMAND']=='deploy_action':
+        #     asyncio.run(deploy_mode(data_js=data_js))
+        # elif data_js['COMMAND']=='remove_action':
+        #     asyncio.run(remove_mode(data_js=data_js))
+        # elif data_js['COMMAND']=='releation_create':
+        #     asyncio.run(releation_create(data_js=data_js))
+        # elif data_js['COMMAND']=='releation_remove':
+        #     asyncio.run(releation_remove(data_js=data_js))
+        # elif data_js['COMMAND']=='application_data':
+        #     asyncio.run(application_data(data_js=data_js))
         else:
             return HttpResponse('ERROR, PLEASE TRY AGAING REQUEST')
         return HttpResponse(json.dumps(source_data))
@@ -119,118 +119,101 @@ Function connected whit model, principe DRY
 async def model_mode(model):
     model = Model()
     global source_data
-    await model.connect(endpoint=data_list['endpoint_test_version'],
-                        uuid=data_list['uuid_test_version'],
-                        username=data_list['username_test_version'],
-                        password=data_list['password_test_version'],
-                        cacert=data_list['cert_test_version']
-    )
+    await model.connect()
     return model
 
 async def controller_mode():
     global source_data
     controller = Controller()
-    await controller.connect(endpoint=data_list['endpoint_test_version'],
-                             username=data_list['username_test_version'],
-                             password=data_list['password_test_version'],
-                             cacert=data_list['cert_test_version']
-                             )
+    await controller.connect(data_js['name_controller'])
     print(await controller.model_uuids())
     source_data = await controller.model_uuids()
 
-async def deploy_mode(data_js):
-    model = object
-    global source_data
-    model = await model_mode(model=model)
-    await model.deploy(
-        entity_url=data_js['entity_url'],
-        application_name=data_js['application_name'],
-        series=data_js['series'],
-        channel=data_js['channel'],
-        constraints={
-            'tags': [data_js['constraints']]
-        },
-        num_units=data_js['num_units'],
-    )
-    app = Application(model=model, entity_id=data_js['entity_url'])
-    source_data = app.status
-    print(source_data)
-
-async def remove_mode(data_js):
-    model = object
-    global source_data
-    model = await model_mode(model=model)
-    await model.remove_application(
-        app_name=data_js['application_name'],
-        force=True
-    )
-    app = Application(model=model, entity_id=data_js['entity_url'])
-    source_data = app.status
-    print(source_data)
-
-async def releation_create(data_js):
-    model = object
-    global source_data
-    model = await model_mode(model=model)
-    await model.add_relation(data_js['relation_name1'], data_js['relation_name2'])
-    app = Application(model=model, entity_id=data_js['entity_url'])
-    source_data = app.status
-    print(source_data)
-
-async def releation_remove(data_js):
-    model = object
-    global source_data
-    model = await model_mode(model=model)
-    app = Application(model=model, entity_id=data_js['entity_url'])
-    app.remove_relation(local_relation=data_js['relation_name1'], remote_relation=data_js['relation_name2'])
-    source_data = app.status
-    print(source_data)
-
-async def add_user_controlelr():
-    controller = Controller()
-    await controller.connect(endpoint=data_list['endpoint_test_version'],
-                       username=data_list['username_test_version'],
-                       password=data_list['password_test_version'],
-                       cacert=data_list['cert_test_version']
-    )
-    await controller.add_user(
-        username='aibar',
-        password='Ghjuyjp56',
-        display_name='Turar Aiabr'
-    )
-    global source_data
-    source_data = await controller.get_users()
-    print(await controller.get_users())
-
-async def application_data(data_js):
-    global source_data
-    model = object
-    model = await model_mode(model=model)
-    app = Application(model=model, entity_id=data_js['entity_url'])
-    source_data = app.status
-    print(app.status_message)
-
-# TODO решить вопрос с моментом ресурса системы 
-
-
-def create_controller():
+async def create_controller():
     os.system('sudo snap install juju --classic')
     print("start-1")
     os.system('juju add-cloud --client -f maas-cloud.yaml maas1')
     print("start-2")
     os.system('juju add-credential --client -f maas-creds.yaml maas1')
     print("start-3")
-    os.system('juju bootstrap maas1 massControllerAibar\
-    --config default-space=juju \
-    --config juju-ha-space=juju \
-    --config juju-mgmt-space=juju \
-    --config ssl-hostname-verification=false \
-    --bootstrap-series=focal --constraints tags=controller maas1 jujuControllerTestAibar --show-log --debug')
-    print("start-3")
-    os.system('juju status')
-    print('Finish my application')
+    #tags указать машинку, потом облако, потом название!!!!
+    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags=testdb maas1 testcontroller --show-log --debug')
 
     
+# async def deploy_mode(data_js):
+#     model = object
+#     global source_data
+#     model = await model_mode(model=model)
+#     await model.deploy(
+#         entity_url=data_js['entity_url'],
+#         application_name=data_js['application_name'],
+#         series=data_js['series'],
+#         channel=data_js['channel'],
+#         constraints={
+#             'tags': [data_js['constraints']]
+#         },
+#         num_units=data_js['num_units'],
+#     )
+#     app = Application(model=model, entity_id=data_js['entity_url'])
+#     source_data = app.status
+#     print(source_data)
+
+# async def remove_mode(data_js):
+#     model = object
+#     global source_data
+#     model = await model_mode(model=model)
+#     await model.remove_application(
+#         app_name=data_js['application_name'],
+#         force=True
+#     )
+#     app = Application(model=model, entity_id=data_js['entity_url'])
+#     source_data = app.status
+#     print(source_data)
+
+# async def releation_create(data_js):
+#     model = object
+#     global source_data
+#     model = await model_mode(model=model)
+#     await model.add_relation(data_js['relation_name1'], data_js['relation_name2'])
+#     app = Application(model=model, entity_id=data_js['entity_url'])
+#     source_data = app.status
+#     print(source_data)
+
+# async def releation_remove(data_js):
+#     model = object
+#     global source_data
+#     model = await model_mode(model=model)
+#     app = Application(model=model, entity_id=data_js['entity_url'])
+#     app.remove_relation(local_relation=data_js['relation_name1'], remote_relation=data_js['relation_name2'])
+#     source_data = app.status
+#     print(source_data)
+
+# async def add_user_controlelr():
+#     controller = Controller()
+#     await controller.connect(endpoint=data_list['endpoint_test_version'],
+#                        username=data_list['username_test_version'],
+#                        password=data_list['password_test_version'],
+#                        cacert=data_list['cert_test_version']
+#     )
+#     await controller.add_user(
+#         username='aibar',
+#         password='Ghjuyjp56',
+#         display_name='Turar Aiabr'
+#     )
+#     global source_data
+#     source_data = await controller.get_users()
+#     print(await controller.get_users())
+
+# async def application_data(data_js):
+#     global source_data
+#     model = object
+#     model = await model_mode(model=model)
+#     app = Application(model=model, entity_id=data_js['entity_url'])
+#     source_data = app.status
+#     print(app.status_message)
+
+
+
 
 
 
