@@ -148,7 +148,7 @@ async def remove_mode(data_js):
     )
     # app = Application(model=model, entity_id=data_js['entity_url'])
     # source_data = app.status
-    source_data = model.info
+    source_data = model.state
     print(source_data)
 
 async def releation_create(data_js):
