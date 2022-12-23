@@ -105,7 +105,8 @@ async def remove_model_and_add_model(data_js):
     # await controller.destroy_models('default')
     # await controller.destroy_models('controller')
     await controller.add_model(
-        model_name= data_js['model_name']
+        model_name= data_js['model_name'],
+
     )
     source_data = await controller.list_models()
 
@@ -122,7 +123,7 @@ async def create_controller(data_js):
 async def deploy_mode(data_js):
     global source_data
     model = Model()
-    await model.connect(data_js['controller_name'])
+    await model.connect(data_js['model_name'])
     await model.deploy(
         entity_url=data_js['entity_url'],
         application_name=data_js['application_name'],
