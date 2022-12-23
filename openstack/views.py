@@ -102,15 +102,14 @@ async def remove_model_and_add_model(data_js):
     global source_data
     controller = Controller()
     await controller.connect(data_js['controller_name'])
-    await controller.destroy_models('default',False)
-    await controller.destroy_models('controller',False)
+    # await controller.destroy_models('default')
+    # await controller.destroy_models('controller')
     await controller.add_model(
         model_name= data_js['controller_name'],
-        cloud_name='maas1'
+        cloud_name='maas1',
+        credential_name='admin'
     )
     source_data = await controller.list_models()
-
-
 
 async def create_controller(data_js):
     os.system('sudo snap install juju --classic')
@@ -121,7 +120,6 @@ async def create_controller(data_js):
     print("start-3")
     #tags указать машинку, потом облако, потом название!!!!
     os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags=testdb maas1 '+ str(data_js['controller_name']) +' --show-log --debug')
-
     
 async def deploy_mode(data_js):
     global source_data
@@ -171,7 +169,6 @@ async def releation_remove(data_js):
     source_data = app.status
     print(source_data)
 
-
 async def application_data(data_js):
     global source_data
     model = Model()
@@ -179,3 +176,5 @@ async def application_data(data_js):
     app = Application(model=model, entity_id=data_js['entity_url'])
     source_data = app.status
     print(app.status_message)
+#TODO Доделать постройку модели и очищение от моделей по умолчанию!
+
