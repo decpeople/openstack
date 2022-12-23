@@ -146,14 +146,12 @@ async def remove_mode(data_js):
         app_name=data_js['application_name'],
         force=True
     )
-    # app = Application(model=model, entity_id=data_js['entity_url'])
-    # source_data = app.status
     source_data = model.state
     print(source_data)
 
 async def releation_create(data_js):
     model = Model()
-    await model.connect(data_js['application_name'])
+    await model.connect(data_js['model_name'])
     global source_data
     await model.add_relation(data_js['relation_name1'], data_js['relation_name2'])
     app = Application(model=model, entity_id=data_js['entity_url'])
@@ -162,7 +160,7 @@ async def releation_create(data_js):
 
 async def releation_remove(data_js):
     model = Model()
-    await model.connect(data_js['application_name'])
+    await model.connect(data_js['model_name'])
     global source_data
     app = Application(model=model, entity_id=data_js['entity_url'])
     app.remove_relation(local_relation=data_js['relation_name1'], remote_relation=data_js['relation_name2'])
@@ -172,9 +170,8 @@ async def releation_remove(data_js):
 async def application_data(data_js):
     global source_data
     model = Model()
-    await model.connect(data_js['application_name'])
+    await model.connect(data_js['model_name'])
     app = Application(model=model, entity_id=data_js['entity_url'])
     source_data = app.status
     print(app.status_message)
-#TODO Доделать постройку модели и очищение от моделей по умолчанию!
 

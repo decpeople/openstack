@@ -9,23 +9,30 @@
         "controller_name":"Aibar"
     },
     {
+        "COMMAND":"remove_model_and_add_model",
+        "controller_name":"Aibar",
+        "model_name":"Aibar"
+    },
+    {
         "COMMAND":"model_data"
     },
     {   
         "COMMAND":"deploy_action",
-        "controller_name":"Aibar",
-        "entity_url": "mysql-innodb-cluster",
-        "application_name": "mysql-innodb-cluster",
-        "series": "jammy",
-        "channel": "8.0/stable",
-        "constraints": "testdb",
-        "num_units": 3
+        "model_name":"qa1",
+        "controller_name":"one-step",
+        "entity_url": "keystone",
+        "application_name": "keystone",
+        "series": "focal",
+        "channel": "latest/stable",
+        "constraints": "testapp",
+        "num_units": 1
     },
     {
         "COMMAND":"remove_action",
-        "controller_name":"Aibar",
-        "entity_url":"mysql-innodb-cluster",
-        "application_name":"mysql-innodb-cluster"
+        "controller_name":"one-step",
+        "model_name":"qa1",
+        "entity_url":"keystone",
+        "application_name":"keystone"
         
     },
     {
