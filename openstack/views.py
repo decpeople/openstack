@@ -141,13 +141,14 @@ async def deploy_mode(data_js):
 async def remove_mode(data_js):
     global source_data
     model = Model()
-    await model.connect(data_js['application_name'])
+    await model.connect(data_js['model_name'])
     await model.remove_application(
         app_name=data_js['application_name'],
         force=True
     )
-    app = Application(model=model, entity_id=data_js['entity_url'])
-    source_data = app.status
+    # app = Application(model=model, entity_id=data_js['entity_url'])
+    # source_data = app.status
+    source_data = model.info
     print(source_data)
 
 async def releation_create(data_js):
