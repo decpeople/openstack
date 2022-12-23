@@ -105,7 +105,7 @@ async def remove_model_and_add_model(data_js):
     # await controller.destroy_models('default')
     # await controller.destroy_models('controller')
     await controller.add_model(
-        model_name= data_js['controller_name'],
+        model_name= data_js['model_name'],
         cloud_name='maas1',
         credential_name='admin'
     )
