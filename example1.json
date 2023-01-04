@@ -1,19 +1,16 @@
 [
-    {
-        "COMMAND":"controll_data",
-        "controller_name":"one-step"
-        
-    },
-    {
+     {
         "COMMAND":"create_controller",
         "controller_name":"one-step",
         "constraints": "testapp"
     },
-    {
+
+     {
         "COMMAND":"add_model",
         "controller_name":"one-step",
         "model_name":"Aibar"
     },
+
     {   
         "COMMAND":"deploy_action",
         "model_name":"qa1",
@@ -25,6 +22,7 @@
         "constraints": "testapp",
         "num_units": 1
     },
+
     {
         "COMMAND":"remove_action",
         "controller_name":"one-step",
@@ -32,17 +30,11 @@
         "application_name":"keystone"
         
     },
+
     {
         "COMMAND":"releation_create",
         "controller_name":"one-step",
         "model_name":"qa1",
-        "relation_name1":"value-1",
-        "relation_name2":"value-2"
-    },
-    {
-        "COMMAND":"releation_remove",
-        "controller_name":"one-step",
-        "entity_url":"mysql-innodb-cluster",
         "relation_name1":"value-1",
         "relation_name2":"value-2"
     },
@@ -53,11 +45,6 @@
         "model_name":"qa1",
         "entity_url":"keystone",
         "application_name":"keystone"
-    },
-    {
-        "COMMAND":"refresh_application",
-        "controller_name":"one-step",
-        "entity_url":"keystone",
-        "channel":"8.0.19"
     }
+
 ]
