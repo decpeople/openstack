@@ -5,6 +5,7 @@ from rest_framework import routers
 from . import views
 router = routers.DefaultRouter()
 router.register(r'openstack', views.ChurmHubViewSet)
+router.register(r'datajuju', views.DataFromJujuClientTerminalViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('index/' ,views.index, name='index'),

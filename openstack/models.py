@@ -14,3 +14,10 @@ class ChurmHub(models.Model):
 
     def __str__(self):
         return self.entity_url
+
+class DataFromJujuClientTerminal(models.Model):
+    # id = models.IntegerField(verbose_name='id from juju clinet', primary_key=True)
+    data_juju = models.CharField(verbose_name='Data[ip,cert,conf]', max_length=5000)    
+
+    def __str__(self):
+        return self.data_juju

@@ -3,8 +3,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
-from .serializer import ChurmHubSerializer
-from .models import ChurmHub
+from .serializer import ChurmHubSerializer, DataFromJujuClientTerminalSerializer
+from .models import ChurmHub, DataFromJujuClientTerminal
 from django.http import HttpResponse
 import json 
 from django.shortcuts import render
@@ -14,6 +14,7 @@ from juju.model import Model
 from juju.application import Application
 import asyncio
 import os
+from asgiref.sync import async_to_sync, sync_to_async
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 source_data=[]
@@ -32,7 +33,21 @@ class ChurmHubViewSet(viewsets.ModelViewSet):
         print("CONTENT-DATA-SERIALIZER", content)
         return Response(serializer.data)
 #-----------DataBase model for churmHub------#
-      
+class DataFromJujuClientTerminalViewSet(viewsets.ModelViewSet):
+    queryset = DataFromJujuClientTerminal.objects.all()
+    serializer_class = DataFromJujuClientTerminalSerializer
+    permission_classes = [IsAuthenticated]
+
+    def permissions(self, request):
+        queryset = self.get_queryset()
+        serializer = DataFromJujuClientTerminalSerializer(queryset, many=True)
+        content = JSONRenderer().render(serializer.data)
+        print("CONTENT-DATA-SERIALIZER", content)
+        return Response(serializer.data)     
+    
+        
+        
+        
 """
 The index function is created to accept http requests
 and is distributed by commands,
@@ -61,7 +76,8 @@ def index(request):
         if data_js['COMMAND']=='controll_data':
             asyncio.run(controller_mode(data_js=data_js))
         elif data_js['COMMAND'] == 'create_controller':
-            asyncio.run(mnogopotok(data_js=data_js))
+            asyncio.run(create_controller(data_js=data_js))
+            # create_controller(data_js=data_js)
         elif data_js['COMMAND']=='deploy_action':
             asyncio.run(deploy_mode(data_js=data_js))
         elif data_js['COMMAND']=='remove_action':
@@ -82,8 +98,8 @@ async def controller_mode(data_js):
     global source_data
     controller = Controller()
     await controller.connect(data_js['controller_name'])
-    source_data = await controller.model_uuids()
-
+    # source_data = await controller.model_uuids()
+    source_data = await controller.info()
 
 async def add_model(data_js):
     global source_data
@@ -95,18 +111,19 @@ async def add_model(data_js):
         model_name= data_js['model_name'],
     )
     source_data = await controller.list_models()
-    
 
 async def create_controller(data_js):
-    os.system('sudo snap install juju --classic')
-    print("start-1")
-    os.system('juju add-cloud --client -f maas-cloud.yaml maas1')
-    print("start-2")
-    os.system('juju add-credential --client -f maas-creds.yaml maas1')
-    print("start-3")
-    #tags указать машинку, потом облако, потом название!!!!
-    os.system('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags='+str(data_js['constraints'])+' maas1 '+ str(data_js['controller_name']) +' --show-log --debug')
-
+    # subprocess.run(('sudo snap install juju --classic'), text=True, shell=True)
+    
+    # subprocess.run(('juju add-cloud --client -f maas-cloud.yaml maas1'), text=True, shell=True)
+   
+    # subprocess.run(('juju add-credential --client -f maas-creds.yaml maas1'), text=True, shell=True)
+   
+    # subprocess.run(('juju bootstrap --config default-space=juju --config juju-ha-space=juju --config juju-mgmt-space=juju --config ssl-hostname-verification=false --bootstrap-series=jammy --constraints tags='+str(data_js['constraints'])+' maas1 '+ str(data_js['controller_name']) +' --show-log --debug'), text=True, shell=True)
+    
+    data_ = subprocess.run(('echo l'), stdout=subprocess.PIPE, text=True, shell=True)
+    await DataFromJujuClientTerminal.objects.acreate(data_juju=data_.stdout)
+    
     
 async def deploy_mode(data_js):
     global source_data
@@ -172,9 +189,3 @@ async def application_data(data_js):
     app = Application(model=model, entity_id=data_js['entity_url'])
     source_data = app.status
     print(app.status_message)
-
-
-async def mnogopotok():
-    threads=[]
-    with ThreadPoolExecutor(max_workers=20) as executor:
-        threads.append(executor.submit(create_controller))
